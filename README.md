@@ -1,96 +1,80 @@
-♟️ CHECKERS ARENA
+# ♟️ CHECKERS ARENA
 
-<div align="center">"Game" (https://img.shields.io/badge/🎮-ONLINE_GAME-e8bb72?style=for-the-badge)
-"Status" (https://img.shields.io/badge/STATUS-PLAYABLE-32c875?style=for-the-badge)
-"Platform" (https://img.shields.io/badge/PLATFORM-WEB-79a9df?style=for-the-badge)
-"License" (https://img.shields.io/badge/LICENSE-MIT-purple?style=for-the-badge)
+<p align="center">
+  <img src="https://img.shields.io/badge/CHECKERS-ARENA-e8bb72?style=for-the-badge&labelColor=171923">
+  <img src="https://img.shields.io/badge/WEB-GAME-79a9df?style=for-the-badge">
+  <img src="https://img.shields.io/badge/STATUS-ONLINE-32c875?style=for-the-badge">
+</p>
 
-🔥 Добро пожаловать на арену шашек!
+<h2 align="center">🔥 Добро пожаловать на арену!</h2>
 
-Классические русские шашки с ботом, локальной игрой и P2P-мультиплеером.
+<p align="center">
+  Классические русские шашки с ботом,
+  локальной игрой и P2P-мультиплеером.
+</p>
 
-<br>""▶ ИГРАТЬ СЕЙЧАС" (https://img.shields.io/badge/▶_ИГРАТЬ_СЕЙЧАС-PLAY_NOW-e8bb72?style=for-the-badge&labelColor=171923)" (https://exorexic.github.io/checkers-arena/)
-
-"🌐 Открыть сайт" (https://exorexic.github.io/checkers-arena/)
-
-</div>---
-
-🎮 Об игре
-
-Checkers Arena — браузерная игра в русские шашки. Играй против искусственного интеллекта или бросай вызов друзьям!
-
-✨ Возможности
-
-Возможность| Описание
-🤖 Игра с ботом| 3 уровня сложности
-👥 Локальная игра| Два игрока на одном устройстве
-🌐 P2P Online| Игра с другом через интернет
-👑 Дамки| Превращение обычных шашек
-⚔️ Взятия| Обязательное взятие и серии
-↶ Отмена| Возможность отменить ход
-📱 Адаптация| Телефоны, планшеты и ПК
-
-🕹️ Режимы игры
-
-🤖 Singleplayer
-
-Сразись с ботом и проверь свою тактику.
-
-👥 Local Multiplayer
-
-Играй с другом на одном устройстве.
-
-🌍 P2P Multiplayer
-
-Создавай комнату, отправляй приглашение другу и играйте друг против друга.
-
-📜 Правила
-
-- Игровое поле — 8×8.
-- Белые ходят первыми.
-- Обычная шашка ходит по диагонали.
-- Взятие обязательно.
-- При достижении последней горизонтали шашка становится дамкой.
-- Побеждает игрок, который лишил противника возможности ходить.
-
-📱 Поддерживаемые устройства
-
-- Android
-- iPhone / iPad
-- Windows
-- macOS
-- Linux
-
-Работает в современном браузере.
-
-🚀 Запуск
-
-Открой сайт:
-
-https://exorexic.github.io/checkers-arena/
-
-Установка не требуется.
-
-🛠️ Технологии
-
-- HTML5
-- CSS3
-- JavaScript
-- WebRTC
-- GitHub Pages
-
-👨‍💻 Разработчик
-
-exorexic
-
-GitHub: https://github.com/exorexic
+<p align="center">
+  <a href="https://exorexic.github.io/checkers-arena/">
+    <img src="https://img.shields.io/badge/▶_ИГРАТЬ_СЕЙЧАС-НАЧАТЬ_ИГРУ-e8bb72?style=for-the-badge&labelColor=171923">
+  </a>
+</p>
 
 ---
 
-<div align="center">♟️ READY TO PLAY?
+## 🎮 Игровые режимы
 
-""PLAY CHECKERS ARENA" (https://img.shields.io/badge/♟️_PLAY_CHECKERS_ARENA-НАЧАТЬ_ИГРУ-e8bb72?style=for-the-badge&labelColor=171923)" (https://exorexic.github.io/checkers-arena/)
+| Режим | Описание |
+|---|---|
+| 🤖 Bot | Три уровня сложности |
+| 👥 Local | Игра вдвоём |
+| 🌐 P2P | Игра с другом онлайн |
 
-Made with ❤️ by exorexic
+## ✨ Возможности
 
-</div>
+- 👑 Дамки
+- ⚔️ Обязательное взятие
+- 🔥 Серии взятий
+- ↶ Отмена ходов
+- 📱 Поддержка телефонов
+- 💻 Поддержка компьютеров
+- 🌍 Мультиплеер через WebRTC
+
+## 🕹️ Как играть
+
+1. Открой игру.
+2. Выбери режим.
+3. Начни партию.
+4. Победи соперника!
+
+## 🌐 Онлайн-игра
+
+Для подключения к другу:
+1. Создай приглашение.
+2. Отправь код другу.
+3. Получи ответный код.
+4. Подключись и играй!
+
+## 🛠️ Технологии
+
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![WebRTC](https://img.shields.io/badge/WebRTC-333333?style=for-the-badge)
+
+## 👨‍💻 Разработчик
+
+**exorexic**
+
+[GitHub](https://github.com/exorexic)
+
+---
+
+<p align="center">
+  <a href="https://exorexic.github.io/checkers-arena/">
+    <img src="https://img.shields.io/badge/♟️_PLAY_CHECKERS_ARENA-PLAY_NOW-e8bb72?style=for-the-badge&labelColor=171923">
+  </a>
+</p>
+
+<p align="center">
+  Made with ❤️ by exorexic
+</p>
