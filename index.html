@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#171923">
+<title>Шашки — P2P</title>
+<style>
+:root{--bg:#171923;--panel:#222634;--panel2:#2b3041;--text:#f4f0e8;--muted:#a9adbd;--accent:#e7b66b;--light:#f0d9b5;--dark:#78543d;--red:#d75c58;--blue:#79a9df}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#2a3041 0,#171923 58%);color:var(--text);font:16px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh;padding:22px}
+.wrap{max-width:1050px;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+h1{font-size:clamp(26px,5vw,38px);margin:0;letter-spacing:-1px}.sub{color:var(--muted);font-size:14px;margin-top:4px}
+.pill{background:#33394b;color:var(--accent);padding:8px 12px;border-radius:99px;font-size:13px}
+.layout{display:grid;grid-template-columns:minmax(280px,600px) minmax(260px,1fr);gap:18px;align-items:start}
+.card{background:linear-gradient(145deg,#252a39,#202432);border:1px solid #3a4052;border-radius:20px;padding:16px;box-shadow:0 16px 40px #0003}
+.board{width:100%;aspect-ratio:1;display:grid;grid-template-columns:repeat(8,1fr);border:7px solid #493728;border-radius:12px;overflow:hidden;box-shadow:0 12px 30px #0005;touch-action:manipulation}
+.sq{position:relative;display:grid;place-items:center;min-width:0;cursor:pointer}.sq.light{background:var(--light)}.sq.dark{background:var(--dark)}
+.sq.selected:after{content:"";position:absolute;inset:4px;border:3px solid #f8d36c;border-radius:8px;pointer-events:none}
+.sq.move:before{content:"";width:27%;height:27%;border-radius:50%;background:#f6e9bdcc;position:absolute}
+.sq.capture:before{width:62%;height:62%;background:transparent;border:4px solid #ffe28b}
+.piece{width:76%;height:76%;border-radius:50%;position:relative;z-index:1;box-shadow:inset 0 4px 4px #ffffff55,inset 0 -6px 5px #0005,0 4px 5px #0006;border:3px solid #ffffff45}
+.piece.white{background:radial-gradient(circle at 35% 28%,#fff,#d9dce5 55%,#969ba9)}.piece.black{background:radial-gradient(circle at 35% 28%,#737b8c,#252a36 62%,#10131a)}
+.piece.king:after{content:"♛";position:absolute;inset:0;display:grid;place-items:center;font-size:clamp(17px,3vw,27px);color:#e7b66b;text-shadow:0 1px 2px #000}
+.status{font-size:18px;font-weight:700;margin:0 0 12px}.turnline{display:flex;align-items:center;gap:9px;margin-bottom:14px}.dot{width:13px;height:13px;border-radius:50%;background:#e1e3ea;box-shadow:0 0 0 3px #ffffff22}.dot.black{background:#343a48}
+button,select,textarea{font:inherit}button{border:0;border-radius:11px;padding:11px 14px;background:var(--accent);color:#26202a;font-weight:750;cursor:pointer;transition:.15s}button:hover{filter:brightness(1.08);transform:translateY(-1px)}button.secondary{background:#3a4052;color:var(--text)}button.danger{background:#733e43;color:#fff}button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:14px}.mode{background:#353b4e;color:#dfe2ed;padding:10px 6px;font-size:13px}.mode.active{background:var(--accent);color:#26202a}
+label{display:block;color:var(--muted);font-size:13px;margin:12px 0 6px}select,textarea{width:100%;background:#171b27;color:var(--text);border:1px solid #41485d;border-radius:10px;padding:10px}textarea{min-height:88px;resize:vertical;font-size:12px;word-break:break-all}
+.note{color:var(--muted);font-size:13px;line-height:1.5}.log{max-height:130px;overflow:auto;color:var(--muted);font-size:13px;line-height:1.6;padding-left:18px}
+.hidden{display:none!important}.connection{border-top:1px solid #3a4052;margin-top:16px;padding-top:12px}
+@media(max-width:760px){body{padding:12px}.layout{grid-template-columns:1fr}.card{padding:12px}.board{border-width:5px}.modes{grid-template-columns:1fr 1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="top"><div><h1>♟ Шашки</h1><div class="sub">Классические русские шашки · играй с другом или против бота</div></div><div class="pill">P2P · без регистрации</div></div>
+ <div class="layout">
+  <section class="card">
+   <div class="turnline"><span id="turnDot" class="dot"></span><p class="status" id="status">Ход белых</p></div>
+   <div class="board" id="board" aria-label="Игровая доска"></div>
+   <div class="actions" style="margin-top:14px"><button class="secondary" id="undo">↶ Отменить</button><button class="secondary" id="restart">⟲ Новая игра</button></div>
+  </section>
+  <aside class="card">
+   <div class="modes">
+    <button class="mode active" data-mode="bot">🤖 С ботом</button>
+    <button class="mode" data-mode="local">👥 На одном</button>
+    <button class="mode" data-mode="p2p">🌐 P2P онлайн</button>
+   </div>
+   <div id="botSettings">
+    <label for="difficulty">Сложность бота</label>
+    <select id="difficulty"><option value="1">Лёгкая</option><option value="2" selected>Средняя</option><option value="3">Сложная</option></select>
+   </div>
+   <div id="p2pSettings" class="hidden">
+    <p class="note">Соединение напрямую через WebRTC. Один игрок создаёт приглашение и отправляет код второму. Сервер для игры не нужен; для соединения может потребоваться интернет-доступ к STUN.</p>
+    <div class="actions"><button id="createOffer">Создать приглашение</button><button class="secondary" id="createAnswer">Принять приглашение</button></div>
+    <label>Код от другого игрока / ваш код для отправки</label>
+    <textarea id="signal" placeholder="Код подключения появится здесь или вставь сюда полученный код"></textarea>
+    <div class="actions"><button class="secondary" id="copySignal">Копировать код</button><button id="applySignal">Подключить</button></div>
+    <p class="note" id="netStatus">Не подключено.</p>
+   </div>
+   <div class="connection">
+    <p class="note" id="hint">Вы играете белыми против бота. Белые ходят первыми. Обязательное взятие включено.</p>
+    <label>Последние события</label><ol class="log" id="log"><li>Игра началась.</li></ol>
+   </div>
+  </aside>
+ </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+let board,turn,selected=null,moves=[],history=[],mode='bot',gameOver=false,pc=null,dc=null,role='host',remoteReady=false;
+const clone=b=>b.map(r=>r.map(p=>p?{...p}:null));
+function initial(){let b=Array.from({length:8},()=>Array(8).fill(null));for(let r=0;r<3;r++)for(let c=0;c<8;c++)if((r+c)%2===1)b[r][c]={color:'b',king:false};for(let r=5;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2===1)b[r][c]={color:'w',king:false};return b}
+function reset(){board=initial();turn='w';selected=null;moves=[];history=[];gameOver=false;log('Новая партия');render();if(mode==='p2p')sendState()}
+function log(s){let li=document.createElement('li');li.textContent=s;$('log').prepend(li);while($('log').children.length>12)$('log').lastChild.remove()}
+function inside(r,c){return r>=0&&r<8&&c>=0&&c<8}
+function allMoves(b,color,captureOnly=false){
+ let caps=[],quiet=[];
+ for(let r=0;r<8;r++)for(let c=0;c<8;c++){let p=b[r][c];if(!p||p.color!==color)continue;
+  let dirs=p.king?[[-1,-1],[-1,1],[1,-1],[1,1]]:color==='w'?[[-1,-1],[-1,1]]:[[1,-1],[1,1]];
+  for(let [dr,dc2] of dirs){
+   if(p.king){let rr=r+dr,cc=c+dc2,enemy=null;while(inside(rr,cc)){let q=b[rr][cc];if(q){if(q.color===color||enemy)break;enemy={r:rr,c:cc};}else if(enemy)caps.push({from:[r,c],to:[rr,cc],cap:[enemy.r,enemy.c]});else if(!captureOnly)quiet.push({from:[r,c],to:[rr,cc]});rr+=dr;cc+=dc2}}
+   else {let rr=r+dr,cc=c+dc2;if(!inside(rr,cc))continue;if(!b[rr][cc]&&!captureOnly)quiet.push({from:[r,c],to:[rr,cc]});else if(b[rr][cc]&&b[rr][cc].color!==color){let er=rr+dr,ec=cc+dc2;if(inside(er,ec)&&!b[er][ec])caps.push({from:[r,c],to:[er,ec],cap:[rr,cc]})}}
+  }
+ }
+ return caps.length?caps:(captureOnly?[]:quiet)
+}
+function captureChain(b,r,c,visited=[]){
+ let p=b[r][c],dirs=p.king?[[-1,-1],[-1,1],[1,-1],[1,1]]:p.color==='w'?[[-1,-1],[-1,1]]:[[1,-1],[1,1]],out=[];
+ for(let [dr,dc2] of dirs){let rr=r+dr,cc=c+dc2;if(!inside(rr,cc))continue;let q=b[rr][cc];if(q&&q.color!==p.color){let er=rr+dr,ec=cc+dc2;if(inside(er,ec)&&!b[er][ec])out.push({from:[r,c],to:[er,ec],cap:[rr,cc]})}}
+ return out
+}
+function legalFrom(r,c){let legal=allMoves(board,turn);return legal.filter(m=>m.from[0]===r&&m.from[1]===c)}
+function render(){
+ $('board').innerHTML='';
+ let legal=allMoves(board,turn);
+ for(let r=0;r<8;r++)for(let c=0;c<8;c++){let el=document.createElement('div');el.className='sq '+((r+c)%2?'dark':'light');if(selected&&selected[0]===r&&selected[1]===c)el.classList.add('selected');let target=moves.find(m=>m.to[0]===r&&m.to[1]===c);if(target)el.classList.add(target.cap?'capture':'move');
+  let p=board[r][c];if(p){let piece=document.createElement('div');piece.className='piece '+(p.color==='w'?'white':'black')+(p.king?' king':'');el.append(piece)}
+  el.addEventListener('click',()=>clickSquare(r,c));$('board').append(el)
+ }
+ $('turnDot').className='dot '+(turn==='b'?'black':'');$('status').textContent=gameOver?'Партия окончена':`Ход ${turn==='w'?'белых':'чёрных'}`;
+}
+function clickSquare(r,c){
+ if(gameOver|| (mode==='p2p'&&((role==='host'&&turn!=='w')||(role==='guest'&&turn!=='b'))))return;
+ if(mode==='bot'&&turn==='b')return;
+ if(selected){let m=moves.find(x=>x.to[0]===r&&x.to[1]===c);if(m){applyMove(m);return}}
+ if(board[r][c]&&board[r][c].color===turn){let ms=legalFrom(r,c);if(ms.length){selected=[r,c];moves=ms;render();return}}
+ selected=null;moves=[];render()
+}
+function applyMove(m,fromRemote=false){
+ history.push({board:clone(board),turn,gameOver});
+ let [r,c]=m.from,[rr,cc]=m.to,p=board[r][c];board[rr][cc]=p;board[r][c]=null;
+ if(m.cap)board[m.cap[0]][m.cap[1]]=null;
+ if((p.color==='w'&&rr===0)||(p.color==='b'&&rr===7))p.king=true;
+ selected=null;moves=[];
+ if(m.cap){let chain=captureChain(board,rr,cc);if(chain.length){selected=[rr,cc];moves=chain;log('Продолжи серию взятий');render();if(!fromRemote)sendMove(m);return}}
+ turn=turn==='w'?'b':'w';let count=board.flat().filter(x=>x&&x.color===turn).length;
+ if(!count||!allMoves(board,turn).length){gameOver=true;log(`Победа ${turn==='w'?'чёрных':'белых'}!`)}
+ else log(`${p.color==='w'?'Белые':'Чёрные'}: ${String.fromCharCode(65+c)}${8-r} → ${String.fromCharCode(65+cc)}${8-rr}`);
+ render();if(!fromRemote)sendMove(m);
+ if(mode==='bot'&&turn==='b'&&!gameOver)setTimeout(botTurn,350);
+}
+function botTurn(){
+ if(gameOver||mode!=='bot'||turn!=='b')return;
+ let ms=allMoves(board,'b');if(!ms.length)return;
+ let depth=Number($('difficulty').value),best=-Infinity,chosen=ms[0];
+ for(let m of ms){let b=clone(board);moveOn(b,m);let score=evaluate(b,'b')+Math.random()* (depth===1?10:depth===2?3:0);if(depth>=2)score-=bestReply(b,'w',depth-1)*.65;if(score>best){best=score;chosen=m}}
+ applyMove(chosen)
+}
+function moveOn(b,m){let p=b[m.from[0]][m.from[1]];b[m.to[0]][m.to[1]]=p;b[m.from[0]][m.from[1]]=null;if(m.cap)b[m.cap[0]][m.cap[1]]=null;if((p.color==='w'&&m.to[0]===0)||(p.color==='b'&&m.to[0]===7))p.king=true}
+function evaluate(b,color){let s=0;for(let r=0;r<8;r++)for(let c=0;c<8;c++){let p=b[r][c];if(p)s+=(p.color===color?1:-1)*(p.king?3.2:1+(p.color==='b'?r:7-r)*.035)}return s}
+function bestReply(b,color,d){let ms=allMoves(b,color);if(!ms.length)return 100;if(d===0)return evaluate(b,'b');let best=-Infinity;for(let m of ms){let x=clone(b);moveOn(x,m);best=Math.max(best,-bestReply(x,color==='w'?'b':'w',d-1))}return best}
+function undo(){if(!history.length)return;let h=history.pop();board=h.board;turn=h.turn;gameOver=h.gameOver;selected=null;moves=[];render();log('Ход отменён')}
+$('undo').onclick=undo;$('restart').onclick=reset;
+document.querySelectorAll('.mode').forEach(btn=>btn.onclick=()=>{mode=btn.dataset.mode;document.querySelectorAll('.mode').forEach(x=>x.classList.toggle('active',x===btn));$('botSettings').classList.toggle('hidden',mode!=='bot');$('p2pSettings').classList.toggle('hidden',mode!=='p2p');$('hint').textContent=mode==='bot'?'Вы играете белыми против бота. Белые ходят первыми.':mode==='local'?'Два игрока ходят по очереди за одним устройством.':'В P2P белые — создатель комнаты, чёрные — подключившийся игрок.';disconnect();reset()});
+function sendMove(m){if(mode==='p2p'&&dc&&dc.readyState==='open')dc.send(JSON.stringify({type:'move',move:m}))}
+function sendState(){if(mode==='p2p'&&dc&&dc.readyState==='open')dc.send(JSON.stringify({type:'sync',board,turn,gameOver}))}
+function disconnect(){if(pc)pc.close();pc=null;dc=null;remoteReady=false;$('netStatus').textContent='Не подключено.'}
+function setupPeer(channel){pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});if(channel){dc=channel;wireChannel()}else pc.ondatachannel=e=>{dc=e.channel;wireChannel()};pc.onconnectionstatechange=()=>$('netStatus').textContent='Статус: '+pc.connectionState}
+function wireChannel(){dc.onopen=()=>{$('netStatus').textContent='Соединение установлено!';remoteReady=true;sendState()};dc.onmessage=e=>{try{let d=JSON.parse(e.data);if(d.type==='move'){applyMove(d.move,true)}else if(d.type==='sync'){board=d.board;turn=d.turn;gameOver=d.gameOver;selected=null;moves=[];render()}}catch(err){console.error(err)}}}
+async function waitIce(){if(pc.iceGatheringState==='complete')return;await new Promise(resolve=>{let t=setTimeout(resolve,7000);pc.onicegatheringstatechange=()=>{if(pc.iceGatheringState==='complete'){clearTimeout(t);resolve()}}})}
+$('createOffer').onclick=async()=>{try{disconnect();role='host';setupPeer(pc?.createDataChannel?null:null);dc=pc.createDataChannel('checkers');wireChannel();let offer=await pc.createOffer();await pc.setLocalDescription(offer);await waitIce();$('signal').value=JSON.stringify(pc.localDescription);$('netStatus').textContent='Отправь код гостю. Затем вставь его ответ сюда и нажми «Подключить».'}catch(e){$('netStatus').textContent='Ошибка: '+e.message}};
+$('createAnswer').onclick=()=>{disconnect();role='guest';setupPeer();$('netStatus').textContent='Вставь приглашение в поле и нажми «Подключить».'};
+$('applySignal').onclick=async()=>{try{let d=JSON.parse($('signal').value);if(!pc){role='guest';setupPeer()}if(d.type==='offer'){await pc.setRemoteDescription(d);let a=await pc.createAnswer();await pc.setLocalDescription(a);await waitIce();$('signal').value=JSON.stringify(pc.localDescription);$('netStatus').textContent='Отправь ответ создателю комнаты.'}else if(d.type==='answer'){await pc.setRemoteDescription(d);$('netStatus').textContent='Ответ принят, подключаемся…'}else throw Error('Неверный код')}catch(e){$('netStatus').textContent='Не удалось подключиться: '+e.message}};
+$('copySignal').onclick=async()=>{try{await navigator.clipboard.writeText($('signal').value);$('netStatus').textContent='Код скопирован.'}catch(e){$('signal').select();document.execCommand('copy');$('netStatus').textContent='Код скопирован.'}};
+reset();
+</script>
+</body></html>
